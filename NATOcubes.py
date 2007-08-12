@@ -9,7 +9,6 @@ from os import walk
 from os.path import exists, join
 from socket import SHUT_RDWR, socket, error as socket_error
 from random import Random
-from getopt import getopt
 from optparse import OptionParser
 from thread import start_new_thread
 import thread, pygame
@@ -33,6 +32,8 @@ pygame.font.init()
 if pygame.font.get_init() != 1:
   print 'pygame.font could not be loaded.'
   exit(1)
+
+font, smallfont = None, None
 
 if pygame.font.get_fonts().count('arial') == 1:
     font = pygame.font.SysFont('arial', 20)
