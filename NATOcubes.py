@@ -56,11 +56,11 @@ else:
             smallfont = Font(None, 16)
 
 class Network:
-    closed = False
     def __init__(self, sock):
         self.sock = sock
         self.buffer = ""
         self.listener = start_new_thread(self.listen, ())
+        self.closed = False
 
     def listen(self):
         try:
@@ -69,11 +69,11 @@ class Network:
                     buf = self.sock.recv(1)
                 except socket_error:
                     # socket closed unexpectedly
-                    self.__class__.closed = True
+                    self.closed = True
                     print 'Connection lost'
                     return
                 if len(buf) == 0:
-                    self.__class__.closed = True
+                    self.closed = True
                     print 'Connection lost'
                     return
                 self.buffer += buf
@@ -83,7 +83,7 @@ class Network:
     def get(self, length, blocking = True):
         if blocking:
             while self.len() < length:
-                if self.__class__.closed:
+                if self.closed:
                     return False
                 sleep(0.1)
         ret = self.buffer[0:length]
@@ -91,7 +91,7 @@ class Network:
         return ret
 
     def send(self, string):
-        if self.__class__.closed:
+        if self.closed:
             return False
         else:
             return self.sock.sendall(string)
@@ -173,7 +173,6 @@ class Field(object):
         return count
 
 class base:
-    handler = 0
     def __init__(self):
         parser = OptionParser(
             usage="Usage: %prog [OPTIONS] [HOST]",
@@ -197,8 +196,6 @@ class base:
                 self.xsize, self.ysize = self.handler.getsize()
             else:
                 self.handler = local(options.numplayers)
-
-        self.__class__.handler = self.handler
 
         self.player, self.localplayer, self.numplayers = self.handler.getopts()
         self.counts = []
